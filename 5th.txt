@@ -1,0 +1,35 @@
+Q Unnamed PL/SQL code block: Use of Control structure and Exception handling is mandatory. Write a PL/SQL block of code for the following requirements:- 
+Schema: 1. Borrower(Roll,Name,DateofIssue, NameofBook, Status)
+ 2. Fine (Roll, Date, Amt)  
+• Accept Roll & Name of book from user.
+• Check the number of days (from date of issue), if days are between 15 to 30 then fine amount will be Rs 5per day.
+• If no. of days>30, per day fine will be Rs 50 per day & for days less than 30, Rs. 5 per day.
+• After submitting the book, status will change from I to R.
+• If condition of fine is true, then details will be stored into fine table.
+
+
+create table borrower(rollno int primary key, name varchar(20), dateofissue date, nameofbook varchar(20), status varchar(20));
+
+-- insert into borrower
+
+create table fine(roll int, foreign key(roll) references borrower(rollno), returndate date, amount int);
+
+delimiter //
+create procedure pro(in roll int)
+begin
+declare issuedate date;
+declare numofdays int;
+declare totalfine int;
+select datediff(curdate(), dateofissue) into numofdays from borrower where rollno = roll;
+if numofdays > 15 and numofdays <= 30 then 
+set totalfine = numofdays * 5;
+elseif numofdays > 30 then 
+set totalfine = ((numofdays - 30) * 50) + 15 * 5;
+else set totalfine = 0;
+end if;
+insert into fine values (roll, curdate(), totalfine);
+update borrower set status = 'R' where rollno = roll;
+end //
+
+call pro(1) //
+call pro(2) //

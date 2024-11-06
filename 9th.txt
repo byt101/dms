@@ -1,0 +1,38 @@
+package demo;
+
+import java.sql.*;
+
+public class dem {
+    Connection con;
+    Statement stmt;
+
+    public dem() throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        con = DriverManager.getConnection("jdbc:mysql://localhost:3306/s", "root", "2580");
+        stmt = con.createStatement();
+        stmt.executeUpdate("create table if not exists account(name char(20), age int)");
+        System.out.println("Table Created");
+    }
+
+    public void insert() throws SQLException {
+        stmt.executeUpdate("insert into account values ('sujal', 21)");
+        System.out.println("Inserted");
+    }
+
+    public void update() throws SQLException {
+        stmt.executeUpdate("update account set age = 24 where name = 'sujal'");
+        System.out.println("Updated");
+    }
+
+    public void delete() throws SQLException {
+        stmt.executeUpdate("delete from account where name = 'sujal'");
+        System.out.println("Deleted");
+    }
+
+    public static void main(String[] args) throws ClassNotFoundException, SQLException {
+        dem db = new dem();
+        db.insert();
+        db.update();
+        db.delete();
+    }
+}

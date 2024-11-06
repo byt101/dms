@@ -1,0 +1,164 @@
+4 Design at least  SQL queries for suitable database application using SQL DML statements: all types of Join, Sub-Query .
+Tables:- 
+Salesman(Saleman_id, name, city, commission)
+Customers(Customer_id, customer_name, city, grade, Saleman_id)
+orders(ord_no, ord_date, purch_amt, Customer_id, Saleman_id)
+
+1.Find the name and city of those customers and salesmen who lives in the same city.
+2 .Find the names of all customers along with the salesmen who works for them.
+3 .Display all those orders by the customers not located in the same cities where their salesmen live.
+4. Display all the orders which values are greater than the average order value for 10th October 2012.
+5.Find all orders attributed to salesmen in Paris.
+
+
+mysql> create table s(sid int primary key, sname char(10), city char(10));
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> create table c(cid int, cname char(10), city char(10), sid int, foreign key(sid) references s(sid));
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> create table o(no int, odate date, amt int, cid int, sid int, foreign key(sid) references s(sid), foreign key(cid) references c(cid));
+ERROR 1822 (HY000): Failed to add the foreign key constraint. Missing index for constraint 'o_ibfk_2' in the referenced table 'c'
+mysql> alter table c add primary key(cid);
+Query OK, 0 rows affected (0.08 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> create table o(no int, odate date, amt int, cid int, sid int, foreign key(sid) references s(sid), foreign key(cid) references c(cid));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> insert into s values(1,'sujal','pune');
+Query OK, 1 row affected (0.02 sec)
+
+mysql> insert into s values(2,'kunal','mumbai'),(3,'om','goa');
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> insert into c values(4,'ram','pune',2),(5,'sham','nashik',null),(6,'vaibhav','nagar',3);
+Query OK, 3 rows affected (0.02 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> insert into o values(11,'2012-10-12',323,5,null),(12,'2012-10-10',3273,6,3),(13,'2012-10-10',32543,4,2);
+Query OK, 3 rows affected (0.02 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> select * from s;
++-----+-------+--------+
+| sid | sname | city   |
++-----+-------+--------+
+|   1 | sujal | pune   |
+|   2 | kunal | mumbai |
+|   3 | om    | goa    |
++-----+-------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select * from c;
++-----+---------+--------+------+
+| cid | cname   | city   | sid  |
++-----+---------+--------+------+
+|   4 | ram     | pune   |    2 |
+|   5 | sham    | nashik | NULL |
+|   6 | vaibhav | nagar  |    3 |
++-----+---------+--------+------+
+3 rows in set (0.00 sec)
+
+mysql> select * from o;
++------+------------+-------+------+------+
+| no   | odate      | amt   | cid  | sid  |
++------+------------+-------+------+------+
+|   11 | 2012-10-12 |   323 |    5 | NULL |
+|   12 | 2012-10-10 |  3273 |    6 |    3 |
+|   13 | 2012-10-10 | 32543 |    4 |    2 |
++------+------------+-------+------+------+
+3 rows in set (0.00 sec)
+
+mysql> select cname,sname,city from c,s where s.city=c.city;
+ERROR 1052 (23000): Column 'city' in field list is ambiguous
+mysql> select cname,sname,s.city from c,s where s.city=c.city;
++-------+-------+------+
+| cname | sname | city |
++-------+-------+------+
+| ram   | sujal | pune |
++-------+-------+------+
+1 row in set (0.00 sec)
+
+mysql> select cname,sname,s.city from c inner join s on s.city=c.city;
++-------+-------+------+
+| cname | sname | city |
++-------+-------+------+
+| ram   | sujal | pune |
++-------+-------+------+
+1 row in set (0.00 sec)
+
+mysql> select cname,sname,s.city from c right outer join s on s.city=c.city;
+
++-------+-------+--------+
+| cname | sname | city   |
++-------+-------+--------+
+| ram   | sujal | pune   |
+| NULL  | kunal | mumbai |
+| NULL  | om    | goa    |
++-------+-------+--------+
+3 rows in set (0.00 sec)
+
+mysql> select cname,sname,s.city from c left outer join s on s.city=c.city;
++---------+-------+------+
+| cname   | sname | city |
++---------+-------+------+
+| ram     | sujal | pune |
+| sham    | NULL  | NULL |
+| vaibhav | NULL  | NULL |
++---------+-------+------+
+3 rows in set (0.00 sec)
+
+mysql> select cname,sname from c inner join s on s.sid=c.sid;
++---------+-------+
+| cname   | sname |
++---------+-------+
+| ram     | kunal |
+| vaibhav | om    |
++---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select no,odate,amt from o inner join s,c on c.city != s.city;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'on c.city != s.city' at line 1
+mysql> select no,odate,amt from o inner join s on o.sid=s.sid inner join c on o.cid=c.cid where c.city!=s.city;
++------+------------+-------+
+| no   | odate      | amt   |
++------+------------+-------+
+|   12 | 2012-10-10 |  3273 |
+|   13 | 2012-10-10 | 32543 |
++------+------------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select no,odate,amt c.city from o inner join s on o.sid=s.sid inner j
+oin c on o.cid=c.cid where c.city!=s.city;
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '.city from o inner join s on o.sid=s.sid inner join c on o.cid=c.cid where c.cit' at line 1
+mysql> select no,odate,amt, c.city from o inner join s on o.sid=s.sid inner
+join c on o.cid=c.cid where c.city!=s.city;
++------+------------+-------+-------+
+| no   | odate      | amt   | city  |
++------+------------+-------+-------+
+|   12 | 2012-10-10 |  3273 | nagar |
+|   13 | 2012-10-10 | 32543 | pune  |
++------+------------+-------+-------+
+2 rows in set (0.00 sec)
+
+mysql> select no, odate,amt from o where odate='2012-10-10' and amt>(select avg(amt) from o where odate='2012-10-10');
++------+------------+-------+
+| no   | odate      | amt   |
++------+------------+-------+
+|   13 | 2012-10-10 | 32543 |
++------+------------+-------+
+1 row in set (0.00 sec)
+
+mysql> select * from o inner join s on s.city='pune';
++------+------------+-------+------+------+-----+-------+------+
+| no   | odate      | amt   | cid  | sid  | sid | sname | city |
++------+------------+-------+------+------+-----+-------+------+
+|   11 | 2012-10-12 |   323 |    5 | NULL |   1 | sujal | pune |
+|   12 | 2012-10-10 |  3273 |    6 |    3 |   1 | sujal | pune |
+|   13 | 2012-10-10 | 32543 |    4 |    2 |   1 | sujal | pune |
++------+------------+-------+------+------+-----+-------+------+
+3 rows in set (0.00 sec)
+
+mysql>

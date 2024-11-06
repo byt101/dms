@@ -1,0 +1,14 @@
+Q Design and Develop MongoDB Queries using CRUD operations. (Use CRUD operations, SAVE method, logical operators)
+
+
+use student
+db.createCollection('info')
+db.info.insert([{roll:1,name:'sujal',age:21,gpa:9.8,},{roll:2,name:'om',age:23,gpa:8.7,},{roll:3,name:'kunal',gpa:7.7}]);
+
+db.info.find({gpa:{$gt:9}})  --gt,lt,gte,eq
+db.info.find({name:'sujal'})
+
+db.info.update({name:'sujal'},{$set:{age:44}})
+
+db.info.remove({roll:3})
+db.info.deleteOne({name:'om'})

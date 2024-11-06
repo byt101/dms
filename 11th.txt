@@ -1,0 +1,17 @@
+Q   Implement aggregation and indexing with suitable example using MongoDB. 
+
+use student
+db.createCollection('info')
+db.info.insert([{roll:1,name:'sujal',age:21,gpa:9.8,},{roll:2,name:'om',age:23,gpa:8.7,},{roll:3,name:'kunal',gpa:7.7}])
+db.info.find()
+
+db.info.createIndex({name:1})
+db.info.createIndex({name:-1})
+db.info.getIndexes()
+db.info.dropIndexes()
+
+db.info.aggregate([{$match:{name:'sujal'}}])
+db.info.aggregate({$match:{gpa:{$gt:8.5}}})
+db.info.aggregate({$group:{_id:'$gpa'}})
+db.info.aggregate({$group:{_id:'$gpa', count:{$sum:'$gpa'}}})
+

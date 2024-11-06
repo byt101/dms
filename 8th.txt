@@ -1,0 +1,18 @@
+Q Database Trigger (All Types: Row level and Statement level triggers, Before and After Triggers). Write a database trigger on Library table. The System should keep track of the records that are being updated or deleted. The old value of updated or deleted records should be added in Library_Audit table
+
+
+create table borrower (roll int, name varchar(20), dateofissue date, nameofbook varchar(20), status char(10));
+
+-- insert into borrower(some)
+
+create table library_audit(roll int, name char(20), dateofissue date, nameofbook char(20), status char, ts timestamp);
+
+delimiter //
+create trigger tigu
+after insert on borrower
+for each row
+begin
+insert into library_audit values(new.roll,new.name,new.dateofissue,new.nameofbook,new.status,current_timestamp);
+end //
+
+-- insert into borrower again and check if it is inserted into library_audit also..

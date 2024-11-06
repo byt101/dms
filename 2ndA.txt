@@ -1,0 +1,86 @@
+2 (a) Design and Develop SQL DDL statements which demonstrate the use of SQL objects such as Table.
+Consider :Student (Roll, Name, Address) 
+Subject (sub_code, sub_name
+Marks (Roll, sub_code, marks)	
+1.	Create Tables.
+2.	Add new column  DOB into the table Student.
+3.	Modify the data types of any column.
+4.	Rename the column name sub_code to code.
+5.	Rename the table name Subject to Sub.
+6.	Drop the tables .
+7.	Truncate the  tables.
+
+
+mysql> create database studentinfo;
+Query OK, 1 row affected (0.01 sec)
+
+mysql> use studentinfo;
+Database changed
+
+mysql> create table student(roll int primary key, name varchar(30), address varchar(30));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create table subject(sub_code int primary key, sub_name varchar(30));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create table marks(roll int, sub_code int, mark int, foreign key(roll) references student(roll), foreign key(sub_code) references subject(sub_code));
+Query OK, 0 rows affected (0.05 sec)
+
+mysql> desc student;
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| roll    | int         | NO   | PRI | NULL    |       |
+| name    | varchar(30) | YES  |     | NULL    |       |
+| address | varchar(30) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> desc subject;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| sub_code | int         | NO   | PRI | NULL    |       |
+| sub_name | varchar(30) | YES  |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+2 rows in set (0.00 sec)
+
+mysql> desc marks;
++----------+------+------+-----+---------+-------+
+| Field    | Type | Null | Key | Default | Extra |
++----------+------+------+-----+---------+-------+
+| roll     | int  | YES  | MUL | NULL    |       |
+| sub_code | int  | YES  | MUL | NULL    |       |
+| mark     | int  | YES  |     | NULL    |       |
++----------+------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql>  alter table student add(dob date);
+Query OK, 0 rows affected (0.04 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> alter table marks modify column mark float;
+Query OK, 0 rows affected (0.07 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> alter table subject change sub_code code int;
+Query OK, 0 rows affected (0.02 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> rename table subject to sub;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> drop table marks;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> truncate table sub;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> drop table sub;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> truncate table student;
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> drop table student;;
+Query OK, 0 rows affected (0.02 sec)

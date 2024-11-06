@@ -1,0 +1,48 @@
+Q. Cursors: (All types: Implicit, Explicit, Cursor FOR Loop, Parameterized Cursor) Write a PL/SQL block of code using parameterized Cursor, that will merge the data available in the newly created table Cust_New with the data available in the table Cust_Old. If the data in the first table already exist in the second table then that data should be skipped.
+____________________________________________________________________________________________________________________________________________________________________________
+create table cust_old(id int,name varchar(20),address varchar(20));
+
+-- insert in cust_old
+
+create table cust_new(id int, name varchar(20), address varchar(20));
+
+delimiter //
+create procedure pro(in i int) 
+begin
+declare temp int;
+declare done boolean default false;
+declare crsr cursor for select id from cust_old where id > i;
+declare continue handler for not found set done = true;
+open crsr;
+loop_c: loop
+fetch crsr into temp;
+if done then
+leave loop_c;
+end if;
+if not exists (select * from cust_new where id = temp) then 
+insert into cust_new select * from cust_old where id = temp;
+end if;
+end loop loop_c;
+close crsr;
+end //
+delimiter ;
+
+call pro(3);
+
+
+
+--Without continue handler
+create procedure pro1(in i int) 
+begin
+declare temp int;
+declare crsr cursor for select id from cust_old where id > i;
+open crsr;
+loop_c: loop
+fetch crsr into temp;
+if not exists (select * from cust_new where id = temp) then 
+insert into cust_new select * from cust_old where id = temp;
+end if;
+leave loop_c;
+end loop loop_c;
+close crsr;
+end //

@@ -1,0 +1,171 @@
+3(b)  Design  SQL queries for suitable database application using SQL DML statements: 
+
+-- refer img from word file
+
+(i) To display NAME AND DESIG of those employees whose sgrade is either „S02‟ or „S03‟
+(ii) To display NAME, DESIG, SGRADE of those employee who joined in the year 2009
+(iii) To display all SGRADE, ANNUAL_SALARY from table SALGRADE [where ANNUAL_SALARY = SALARY*12]
+(iv) To display number of employee working in each SALGRADE from table EMPLOYEE
+(v) To display NAME, DESIG, SALARY, HRA from tables EMPLOYEE and SALGRADE where SALARY is less than 50000
+(vi) Select MIN(DOJ), MAX(DOB) from employee;
+(vii) Select SGrade,Salary+HRA from SalGrade where Sgrade=‟S02‟
+(viii) Select count(distinct sgrade) from employee
+(ix) Select sum(salary), avg(salary) from salgrade
+
+
+mysql> use s;
+Database changed
+mysql> create table employee(ecode int, name varchar(30), desig varchar(30), sgrade varchar(30), doj date, dob date);
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> insert into employee values(101,'vikrant','executive','s03','2003-03-23','1980-01-13'),(102,'ravi','head-it','s02','2010-02-12','1987-07-2'),(103,'john cena','receptionist','s03','2009-06-24','1983-02-24'),(105,'azhar ansari','gm','s02','2009-08-11','1984-03-03'),(108,'priyam sen','ceo','s01','2004-12-29','1982-01-19');                                                    Query OK, 5 rows affected (0.02 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> alter table employee add primary key(sgrade);
+ERROR 1062 (23000): Duplicate entry 's02' for key 'employee.PRIMARY'
+mysql> create table salgrade(sgrade varchar(30), salary int, hra int);
+Query OK, 0 rows affected (0.04 sec)
+
+mysql> insert into salgrade values ('s01',56000,18000),('s02',32000,12000),('s03',24000,8000);
+Query OK, 3 rows affected (0.02 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> select * from employee;
++-------+--------------+--------------+--------+------------+------------+
+| ecode | name         | desig        | sgrade | doj        | dob        |
++-------+--------------+--------------+--------+------------+------------+
+|   101 | vikrant      | executive    | s03    | 2003-03-23 | 1980-01-13 |
+|   102 | ravi         | head-it      | s02    | 2010-02-12 | 1987-07-02 |
+|   103 | john cena    | receptionist | s03    | 2009-06-24 | 1983-02-24 |
+|   105 | azhar ansari | gm           | s02    | 2009-08-11 | 1984-03-03 |
+|   108 | priyam sen   | ceo          | s01    | 2004-12-29 | 1982-01-19 |
++-------+--------------+--------------+--------+------------+------------+
+5 rows in set (0.00 sec)
+
+mysql> select * from salgrade;;
++--------+--------+-------+
+| sgrade | salary | hra   |
++--------+--------+-------+
+| s01    |  56000 | 18000 |
+| s02    |  32000 | 12000 |
+| s03    |  24000 |  8000 |
++--------+--------+-------+
+3 rows in set (0.00 sec)
+
+ERROR:
+No query specified
+
+mysql> select name,desig from employee where sgrade='s02' or sgrade='s03';
++--------------+--------------+
+| name         | desig        |
++--------------+--------------+
+| vikrant      | executive    |
+| ravi         | head-it      |
+| john cena    | receptionist |
+| azhar ansari | gm           |
++--------------+--------------+
+4 rows in set (0.00 sec)
+
+mysql> select name,desig,sgrade from employee where year(doj)=2009;
++--------------+--------------+--------+
+| name         | desig        | sgrade |
++--------------+--------------+--------+
+| john cena    | receptionist | s03    |
+| azhar ansari | gm           | s02    |
++--------------+--------------+--------+
+2 rows in set (0.01 sec)
+
+mysql> select sgrade,salary*12 as annual_salary from salgrade;
++--------+---------------+
+| sgrade | annual_salary |
++--------+---------------+
+| s01    |        672000 |
+| s02    |        384000 |
+| s03    |        288000 |
++--------+---------------+
+3 rows in set (0.00 sec)
+
+mysql> select sgrade, count(sgrade) as numofemp from employee,salgrade where
+ employee.sgrade=salgarde.sgrade;
+ERROR 1052 (23000): Column 'sgrade' in field list is ambiguous
+mysql> select sgrade, count(*) as numofemp from employee group by sgrade;
++--------+----------+
+| sgrade | numofemp |
++--------+----------+
+| s03    |        2 |
+| s02    |        2 |
+| s01    |        1 |
++--------+----------+
+3 rows in set (0.01 sec)
+
+mysql> select sgrade, count(sgrade) as numofemp from employee group by sgrad
+e;
++--------+----------+
+| sgrade | numofemp |
++--------+----------+
+| s03    |        2 |
+| s02    |        2 |
+| s01    |        1 |
++--------+----------+
+3 rows in set (0.00 sec)
+
+mysql> select name, desig, salary, hra from employee,salgrade where salary<5
+0000;
++--------------+--------------+--------+-------+
+| name         | desig        | salary | hra   |
++--------------+--------------+--------+-------+
+| vikrant      | executive    |  24000 |  8000 |
+| vikrant      | executive    |  32000 | 12000 |
+| ravi         | head-it      |  24000 |  8000 |
+| ravi         | head-it      |  32000 | 12000 |
+| john cena    | receptionist |  24000 |  8000 |
+| john cena    | receptionist |  32000 | 12000 |
+| azhar ansari | gm           |  24000 |  8000 |
+| azhar ansari | gm           |  32000 | 12000 |
+| priyam sen   | ceo          |  24000 |  8000 |
+| priyam sen   | ceo          |  32000 | 12000 |
++--------------+--------------+--------+-------+
+10 rows in set (0.00 sec)
+
+mysql> select name, desig, salary, hra from employee,salgrade where salary<50000 and employee.sgrade=salgrade.sgrade;
++--------------+--------------+--------+-------+
+| name         | desig        | salary | hra   |
++--------------+--------------+--------+-------+
+| vikrant      | executive    |  24000 |  8000 |
+| ravi         | head-it      |  32000 | 12000 |
+| john cena    | receptionist |  24000 |  8000 |
+| azhar ansari | gm           |  32000 | 12000 |
++--------------+--------------+--------+-------+
+4 rows in set (0.01 sec)
+
+mysql> Select min(doj), max(dob) from employee;
++------------+------------+
+| min(doj)   | max(dob)   |
++------------+------------+
+| 2003-03-23 | 1987-07-02 |
++------------+------------+
+1 row in set (0.00 sec)
+
+mysql> Select sgrade,salary+hra from salgrade where sgrade='S02';
++--------+------------+
+| sgrade | salary+hra |
++--------+------------+
+| s02    |      44000 |
++--------+------------+
+1 row in set (0.00 sec)
+
+mysql> Select count(distinct sgrade) from employee;
++------------------------+
+| count(distinct sgrade) |
++------------------------+
+|                      3 |
++------------------------+
+1 row in set (0.01 sec)
+
+mysql> select sum(salary), avg(salary) from salgrade;
++-------------+-------------+
+| sum(salary) | avg(salary) |
++-------------+-------------+
+|      112000 |  37333.3333 |
++-------------+-------------+
+1 row in set (0.00 sec)

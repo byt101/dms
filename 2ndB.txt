@@ -1,0 +1,52 @@
+2 (b) Design and Develop SQL DDL statements which demonstrate the use of SQL objects such as Table,view ,index
+Consider :Student (Roll, Name, Address) 
+Subject (sub_code, sub_name)
+Marks (Roll, sub_code, marks)
+1. Create Tables.
+2.create view on Subject
+3.Create Index on Marks with sub_code.
+
+
+mysql> use studentinfo;
+Database changed
+mysql> create table student(roll int, name varchar(30), address varchar(30))
+;
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> drop table student;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create table student(roll int primary key, name varchar(30), address varchar(30));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create table subject (sub_code int primary key, sub_name varchar(30));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create table marks(roll int, foreign key(roll) references student(roll), sub_code int, foreign key(sub_code) references subjec(sub_code), mark int);
+ERROR 1824 (HY000): Failed to open the referenced table 'subjec'
+mysql> create table marks(roll int, foreign key(roll) references student(roll), sub_code int, foreign key(sub_code) references subject(sub_code), mark int);
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> create view vv as select * from student;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> select * from vv;
+Empty set (0.00 sec)
+
+mysql> drop view vv;
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create index ind on marks(sub_code);
+Query OK, 0 rows affected (0.03 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> show index from marks;
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible | Expression |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+| marks |          1 | roll     |            1 | roll        | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |
+ | YES     | NULL       |
+| marks |          1 | ind      |            1 | sub_code    | A         |           0 |     NULL |   NULL | YES  | BTREE      |         |
+ | YES     | NULL       |
++-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+------------+
+2 rows in set (0.02 sec)

@@ -1,0 +1,144 @@
+3 (a) Design  SQL queries for suitable database application using SQL DML statements: 
+Consider :Student (Roll, Name, Address) 
+Subject (sub_code, sub_name)
+Marks (Roll, sub_code, marks)
+1.Insert  5 minimum values in all tables
+2. Update row where the values are subcode=”DMS”
+3. find the student whose marks are less<75.
+4. Delete the record of the student whose name=”Pratik”
+
+
+mysql> use s;
+Database changed
+mysql> create table student(roll int primary key, name varchar(30), address varchar(30));
+Query OK, 0 rows affected (0.03 sec)
+
+mysql> create table subject (sub_code int primary key, sub_name varchar(30));
+Query OK, 0 rows affected (0.02 sec)
+
+mysql> create table marks(roll int, foreign key(roll) references student(roll), sub_code int, foreign key(sub_code) references subject(sub_code), mark int);
+Query OK, 0 rows affected (0.06 sec)
+
+mysql> insert into student values(1,'sujal','pune'),(2,'omkar','kondhwa'),(3,'om','khed'),(4,'kunal','nashik'),(5,'vaibahv','mumbai');
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> insert into subject values(11,'cns'),(12,'spos'),(13,'spm'),(14,'toc'),(15,'dms');                                                               Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> insert into marks values
+    -> (1,12,45),(2,13,67),(4,14,78),(3,12,89),(5,11,78);
+Query OK, 5 rows affected (0.01 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> select * from student;
++------+---------+---------+
+| roll | name    | address |
++------+---------+---------+
+|    1 | sujal   | pune    |
+|    2 | omkar   | kondhwa |
+|    3 | om      | khed    |
+|    4 | kunal   | nashik  |
+|    5 | vaibahv | mumbai  |
++------+---------+---------+
+5 rows in set (0.00 sec)
+
+mysql> select * from subject;
++----------+----------+
+| sub_code | sub_name |
++----------+----------+
+|       11 | cns      |
+|       12 | spos     |
+|       13 | spm      |
+|       14 | toc      |
+|       15 | dms      |
++----------+----------+
+5 rows in set (0.00 sec)
+
+mysql> select * from marks;
++------+----------+------+
+| roll | sub_code | mark |
++------+----------+------+
+|    1 |       12 |   45 |
+|    2 |       13 |   67 |
+|    4 |       14 |   78 |
+|    3 |       12 |   89 |
+|    5 |       11 |   78 |
++------+----------+------+
+5 rows in set (0.00 sec)
+
+mysql> insert into marks values(4,15,78),(3,15,89),(5,15,78);
+Query OK, 3 rows affected (0.00 sec)
+Records: 3  Duplicates: 0  Warnings: 0
+
+mysql> select * from marks;
++------+----------+------+
+| roll | sub_code | mark |
++------+----------+------+
+|    1 |       12 |   45 |
+|    2 |       13 |   67 |
+|    4 |       14 |   78 |
+|    3 |       12 |   89 |
+|    5 |       11 |   78 |
+|    4 |       15 |   78 |
+|    3 |       15 |   89 |
+|    5 |       15 |   78 |
++------+----------+------+
+8 rows in set (0.00 sec)
+
+mysql> update marks set mark= mark+5 where sub_code=15;
+Query OK, 3 rows affected (0.01 sec)
+Rows matched: 3  Changed: 3  Warnings: 0
+
+mysql> select * from marks;
++------+----------+------+
+| roll | sub_code | mark |
++------+----------+------+
+|    1 |       12 |   45 |
+|    2 |       13 |   67 |
+|    4 |       14 |   78 |
+|    3 |       12 |   89 |
+|    5 |       11 |   78 |
+|    4 |       15 |   83 |
+|    3 |       15 |   94 |
+|    5 |       15 |   83 |
++------+----------+------+
+8 rows in set (0.00 sec)
+
+mysql> select student.name, marks.roll, mark from marks where mark<75;
+ERROR 1054 (42S22): Unknown column 'student.name' in 'field list'
+mysql> select student.name, marks.roll, mark from marks, student where mark<75;
++---------+------+------+
+| name    | roll | mark |
++---------+------+------+
+| sujal   |    2 |   67 |
+| sujal   |    1 |   45 |
+| omkar   |    2 |   67 |
+| omkar   |    1 |   45 |
+| om      |    2 |   67 |
+| om      |    1 |   45 |
+| kunal   |    2 |   67 |
+| kunal   |    1 |   45 |
+| vaibahv |    2 |   67 |
+| vaibahv |    1 |   45 |
++---------+------+------+
+10 rows in set (0.00 sec)
+
+mysql> insert into student (6,'pratik','parner');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '6,'pratik','parner')' at line 1
+mysql> insert into student values(6,'pratik','parner');
+Query OK, 1 row affected (0.01 sec)
+
+mysql> insert into marks (6,12,67),(6,13,89);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '6,12,67),(6,13,89)' at line 1
+mysql> insert into marks values(6,12,67),(6,13,89);
+Query OK, 2 rows affected (0.01 sec)
+Records: 2  Duplicates: 0  Warnings: 0
+
+mysql> delete from marks,student where roll=(select roll from student where name='pratik');
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'where roll=(select roll from student where name='pratik')' at line 1
+mysql> delete from marks where roll=(select roll from student where name='pratik');
+Query OK, 2 rows affected (0.01 sec)
+
+mysql> delete from student where name='pratik';
+Query OK, 1 row affected (0.02 sec)

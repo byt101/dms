@@ -1,0 +1,16 @@
+Q  Implement Map reduces operation with suitable example using MongoDB.
+
+
+use student
+db.createCollection('info')
+db.info.insert([{roll:1,name:'sujal',div:'A',mark:98},{roll:2,name:'kunal',div:'A',mark:87},{roll:3,name:'om',div:'B',mark:65}])
+db.info.find()
+
+var map=function()
+{emit(this.div,this.mark)}
+
+var reduce=function(div,mark)
+{return Array.sum(mark)}
+
+db.info.mapReduce(map,reduce,{out:'result'})
+db.result.find()

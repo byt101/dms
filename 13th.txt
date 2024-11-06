@@ -1,0 +1,32 @@
+Q  Database Connectivity: Write a program to implement MongoDB database connectivity with any front end language to implement Database navigation operations (add, delete, edit etc.)s
+
+
+
+package JavaMongo;
+
+import com.mongodb.*;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.MongoCollection;
+import org.bson.*;
+import java.util.*;
+
+public class Javamongo {
+	public static void main(String args[]) {
+		MongoClient client = new MongoClient("localhost", 27017);
+		MongoDatabase db = client.getDatabase("student");
+		MongoCollection<Document> collection = db.getCollection("info");
+		System.out.println("Connected");
+		
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter name :");
+		String name = sc.nextLine();
+		System.out.println("Enter roll no :");
+		String roll = sc.nextLine();
+		
+		collection.insertOne(new Document("Name",name).append("RollNo",roll));
+		System.out.println("Inserted");
+		
+        client.close();
+        sc.close();
+	}
+}
